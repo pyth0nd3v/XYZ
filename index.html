@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-
 :root{
   --bg:#06060A;
   --fg:#EEEAE3;
@@ -17,280 +16,89 @@
   --muted:rgba(238,234,227,0.35);
   --line:rgba(238,234,227,0.08);
 }
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:'Instrument Sans',sans-serif;-webkit-font-smoothing:antialiased;cursor:crosshair;}
 
-html,body{
-  width:100%;height:100%;
-  overflow:hidden;
-  background:var(--bg);
-  color:var(--fg);
-  font-family:'Instrument Sans',sans-serif;
-  -webkit-font-smoothing:antialiased;
-  cursor:crosshair;
-}
+/* grain overlay */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");pointer-events:none;z-index:50;opacity:.5;}
 
-body::after{
-  content:'';
-  position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
-  pointer-events:none;
-  z-index:999;
-  opacity:.5;
-}
+/* canvases */
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;}
+#trail{position:fixed;inset:0;pointer-events:none;z-index:51;opacity:.55;}
 
-.screen{
-  position:relative;
-  width:100vw;height:100vh;
-  display:grid;
-  grid-template-rows:auto 1fr auto;
-  padding:clamp(20px,3vw,40px) clamp(20px,3.5vw,48px);
-  overflow:hidden;
-}
+/* aurora blobs */
+.aurora{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:1;mix-blend-mode:screen;}
+.a1{width:60vw;height:60vw;max-width:750px;max-height:750px;background:radial-gradient(circle,rgba(200,255,0,.15) 0%,transparent 65%);top:-18%;left:-12%;animation:d1 16s ease-in-out infinite;}
+.a2{width:55vw;height:55vw;max-width:680px;max-height:680px;background:radial-gradient(circle,rgba(0,200,255,.1) 0%,transparent 65%);bottom:-14%;right:-12%;animation:d2 20s ease-in-out infinite;}
+.a3{width:42vw;height:42vw;max-width:520px;max-height:520px;background:radial-gradient(circle,rgba(200,80,255,.07) 0%,transparent 65%);top:35%;left:38%;transform:translate(-50%,-50%);animation:d3 24s ease-in-out infinite;}
+@keyframes d1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(7vw,5vh) scale(1.1);}66%{transform:translate(-4vw,8vh) scale(.93);}}
+@keyframes d2{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(-9vw,-6vh) scale(1.12);}66%{transform:translate(5vw,-9vh) scale(.91);}}
+@keyframes d3{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.18);}}
 
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:relative;
-  z-index:10;
-  animation:fadeIn .6s .1s both;
-}
+/* scan line */
+.scanline{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(200,255,0,.07),transparent);animation:scan 7s linear infinite;pointer-events:none;z-index:52;}
+@keyframes scan{0%{top:-2px;}100%{top:100vh;}}
 
-.logo-word{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(16px,2.2vw,22px);
-  letter-spacing:.14em;
-  color:var(--fg);
-  opacity:.6;
-}
+/* LAYOUT */
+.screen{position:relative;width:100vw;height:100vh;display:grid;grid-template-rows:auto 1fr auto;padding:clamp(20px,3vw,40px) clamp(20px,3.5vw,48px);z-index:10;}
 
-.status{
-  display:flex;align-items:center;gap:8px;
-  font-size:11px;
-  font-style:italic;
-  color:var(--muted);
-  letter-spacing:.06em;
-}
+/* TOP */
+.topbar{display:flex;align-items:center;justify-content:space-between;animation:fadeIn .6s .1s both;}
+.logo-word{font-family:'Bebas Neue',sans-serif;font-size:clamp(16px,2.2vw,22px);letter-spacing:.14em;color:var(--fg);opacity:.55;}
+.status{display:flex;align-items:center;gap:8px;font-size:11px;font-style:italic;color:var(--muted);letter-spacing:.06em;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 2.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(200,255,0,0);}50%{opacity:.35;box-shadow:0 0 10px 3px rgba(200,255,0,.4);}}
 
-.dot{
-  width:7px;height:7px;
-  border-radius:50%;
-  background:var(--accent);
-  animation:blink 2.2s ease-in-out infinite;
-  flex-shrink:0;
-}
+/* CENTER */
+.center{display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.rule{position:absolute;left:0;right:0;height:1px;background:var(--line);}
+.rule-top{top:0;}.rule-bottom{bottom:0;}
+.name-wrap{position:relative;display:block;overflow:hidden;}
+.name{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,22vw,280px);letter-spacing:-.01em;line-height:.9;display:block;position:relative;z-index:2;clip-path:inset(0 100% 0 0);animation:reveal .95s cubic-bezier(.16,1,.3,1) .35s forwards;}
+@keyframes reveal{to{clip-path:inset(0 0% 0 0);}}
+.name-ghost{position:absolute;top:0;left:0;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,22vw,280px);letter-spacing:-.01em;line-height:.9;-webkit-text-stroke:1px rgba(238,234,227,.06);color:transparent;user-select:none;pointer-events:none;white-space:nowrap;transform:translate(6px,6px);}
+.name-accent{display:inline-block;width:clamp(10px,2.5vw,30px);height:clamp(10px,2.5vw,30px);background:var(--accent);border-radius:50%;margin-left:4px;vertical-align:middle;position:relative;top:clamp(-6px,-1.2vw,-12px);animation:fadeIn .4s 1.2s both;box-shadow:0 0 32px rgba(200,255,0,.55),0 0 8px rgba(200,255,0,.8);}
+.tagline{margin-top:clamp(16px,2.5vh,32px);font-size:clamp(13px,1.4vw,17px);color:var(--muted);font-style:italic;letter-spacing:.02em;animation:fadeIn .7s 1s both;display:flex;align-items:center;gap:12px;}
+.tagline::before{content:'';display:block;width:32px;height:1px;background:var(--muted);flex-shrink:0;}
 
-@keyframes blink{
-  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(200,255,0,0);}
-  50%{opacity:.4;box-shadow:0 0 8px 2px rgba(200,255,0,0.35);}
-}
-
-.center{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-}
-
-.rule{
-  position:absolute;left:0;right:0;
-  height:1px;background:var(--line);
-}
-.rule-top{top:0;}
-.rule-bottom{bottom:0;}
-
-.name-wrap{
-  position:relative;
-  display:block;
-  overflow:hidden;
-}
-
-.name{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(80px, 22vw, 280px);
-  letter-spacing:-.01em;
-  line-height:.9;
-  display:block;
-  position:relative;
-  z-index:2;
-  clip-path:inset(0 100% 0 0);
-  animation:slideReveal .9s cubic-bezier(.16,1,.3,1) .3s forwards;
-}
-
-@keyframes slideReveal{
-  to{clip-path:inset(0 0% 0 0);}
-}
-
-.name-ghost{
-  position:absolute;
-  top:0;left:0;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(80px, 22vw, 280px);
-  letter-spacing:-.01em;
-  line-height:.9;
-  -webkit-text-stroke:1px rgba(238,234,227,0.07);
-  color:transparent;
-  user-select:none;
-  pointer-events:none;
-  white-space:nowrap;
-  transform:translateX(6px) translateY(6px);
-}
-
-.name-accent{
-  display:inline-block;
-  width:clamp(10px,2.5vw,30px);
-  height:clamp(10px,2.5vw,30px);
-  background:var(--accent);
-  border-radius:50%;
-  margin-left:4px;
-  vertical-align:middle;
-  position:relative;
-  top:clamp(-6px,-1.2vw,-12px);
-  animation:fadeIn .4s 1.15s both;
-}
-
-.tagline{
-  margin-top:clamp(16px,2.5vh,32px);
-  font-size:clamp(13px,1.4vw,17px);
-  color:var(--muted);
-  font-style:italic;
-  letter-spacing:.02em;
-  animation:fadeIn .7s .95s both;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.tagline::before{
-  content:'';
-  display:block;
-  width:32px;height:1px;
-  background:var(--muted);
-  flex-shrink:0;
-}
-
-.bottombar{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  position:relative;
-  z-index:10;
-  animation:fadeIn .6s 1.1s both;
-  padding-top:clamp(12px,2vh,24px);
-}
-
-.coming{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(11px,1.1vw,14px);
-  letter-spacing:.22em;
-  color:var(--accent);
-}
-
-.year{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(11px,1.1vw,14px);
-  letter-spacing:.18em;
-  color:var(--muted);
-}
-
-.notify-wrap{
-  display:flex;
-  align-items:center;
-  gap:0;
-}
-
-.notify-input{
-  font-family:'Instrument Sans',sans-serif;
-  font-size:12px;
-  background:transparent;
-  border:1px solid var(--line);
-  border-right:none;
-  color:var(--fg);
-  padding:9px 14px;
-  border-radius:6px 0 0 6px;
-  outline:none;
-  width:clamp(140px,18vw,200px);
-  transition:border-color .2s;
-  letter-spacing:.02em;
-}
+/* BOTTOM */
+.bottombar{display:flex;align-items:flex-end;justify-content:space-between;animation:fadeIn .6s 1.15s both;padding-top:clamp(12px,2vh,24px);}
+.coming{font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.1vw,14px);letter-spacing:.22em;color:var(--accent);}
+.year{font-family:'Bebas Neue',sans-serif;font-size:clamp(11px,1.1vw,14px);letter-spacing:.18em;color:var(--muted);}
+.notify-wrap{display:flex;align-items:center;}
+.notify-input{font-family:'Instrument Sans',sans-serif;font-size:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-right:none;color:var(--fg);padding:9px 14px;border-radius:6px 0 0 6px;outline:none;width:clamp(140px,18vw,200px);transition:border-color .2s;letter-spacing:.02em;backdrop-filter:blur(8px);}
 .notify-input::placeholder{color:var(--muted);font-style:italic;}
-.notify-input:focus{border-color:rgba(200,255,0,0.3);}
+.notify-input:focus{border-color:rgba(200,255,0,.3);}
+.notify-btn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.1em;background:var(--accent);color:var(--bg);border:none;padding:10px 16px;border-radius:0 6px 6px 0;cursor:pointer;transition:opacity .2s,box-shadow .2s;white-space:nowrap;}
+.notify-btn:hover{opacity:.85;box-shadow:0 0 20px rgba(200,255,0,.35);}
 
-.notify-btn{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:13px;
-  letter-spacing:.1em;
-  background:var(--accent);
-  color:var(--bg);
-  border:none;
-  padding:10px 16px;
-  border-radius:0 6px 6px 0;
-  cursor:pointer;
-  transition:opacity .2s;
-  white-space:nowrap;
-}
-.notify-btn:hover{opacity:.85;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-.scanline{
-  position:fixed;
-  left:0;right:0;
-  height:2px;
-  background:linear-gradient(90deg,transparent,rgba(200,255,0,0.05),transparent);
-  animation:scan 6s linear infinite;
-  pointer-events:none;
-  z-index:998;
-}
-@keyframes scan{
-  0%{top:-2px;}
-  100%{top:100vh;}
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(6px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-canvas#trail{
-  position:fixed;inset:0;
-  pointer-events:none;
-  z-index:997;
-  opacity:.45;
-}
-
-@media(max-width:500px){
-  .notify-wrap{display:none;}
-  .year{display:none;}
-  .status span:not(.dot){display:none;}
-}
+@media(max-width:500px){.notify-wrap,.year{display:none;}.status span:not(.dot){display:none;}}
 </style>
 </head>
 <body>
 
+<canvas id="bg"></canvas>
+<div class="a1 aurora"></div>
+<div class="a2 aurora"></div>
+<div class="a3 aurora"></div>
 <canvas id="trail"></canvas>
 <div class="scanline"></div>
 
 <div class="screen">
-
   <div class="topbar">
     <span class="logo-word">VIRKODE</span>
-    <div class="status">
-      <span class="dot"></span>
-      <span>Something is being built</span>
-    </div>
+    <div class="status"><span class="dot"></span><span>Something is being built</span></div>
   </div>
 
   <div class="center">
     <div class="rule rule-top"></div>
     <div class="rule rule-bottom"></div>
-
     <div class="name-wrap">
       <span class="name-ghost" aria-hidden="true">VIRKODE</span>
       <span class="name">VIRKODE<span class="name-accent"></span></span>
     </div>
-
-    <div class="tagline">
-      We are launching soon &mdash; watch this space.
-    </div>
+    <div class="tagline">We are launching soon &mdash; watch this space.</div>
   </div>
 
   <div class="bottombar">
@@ -301,50 +109,206 @@ canvas#trail{
     </div>
     <span class="year">2025</span>
   </div>
-
 </div>
 
 <script>
-const canvas=document.getElementById('trail');
-const ctx=canvas.getContext('2d');
-let W,H;
-function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
-resize();
-window.addEventListener('resize',resize);
-const pts=[];
-let mx=W/2,my=H/2;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-function loop(){
-  ctx.clearRect(0,0,W,H);
-  pts.push({x:mx,y:my,life:1});
-  if(pts.length>40)pts.shift();
-  for(let i=1;i<pts.length;i++){
-    const p=pts[i],pp=pts[i-1];
-    const alpha=p.life*(i/pts.length)*0.35;
-    ctx.beginPath();
-    ctx.moveTo(pp.x,pp.y);
-    ctx.lineTo(p.x,p.y);
-    ctx.strokeStyle='rgba(200,255,0,'+alpha+')';
-    ctx.lineWidth=1.5;
-    ctx.lineCap='round';
-    ctx.stroke();
-    p.life*=0.94;
+/* ══ BACKGROUND: particles + connections + waves ══ */
+(function(){
+  const c = document.getElementById('bg');
+  const cx = c.getContext('2d');
+  let W, H;
+
+  function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  /* Mouse repulsion */
+  let mx = W / 2, my = H / 2;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  /* Particle */
+  class P {
+    constructor(init) { this.init(init); }
+    init(randomY) {
+      this.x = rand(0, W);
+      this.y = randomY ? rand(0, H) : H + rand(10, 30);
+      this.r = rand(0.7, 2.4);
+      this.vx = rand(-0.15, 0.15);
+      this.vy = rand(-0.4, -0.1);
+      this.baseAlpha = rand(0.25, 0.75);
+      this.phase = rand(0, Math.PI * 2);
+      this.speed = rand(0.01, 0.025);
+      const t = Math.random();
+      this.col = t < .55 ? [200,255,0] : t < .8 ? [0,200,255] : [200,90,255];
+      this.streak = Math.random() < .14;
+      if (this.streak) { this.len = rand(18, 80); this.ang = rand(0, Math.PI*2); this.angV = rand(-0.004, 0.004); }
+    }
+    update() {
+      /* gentle repulsion from cursor */
+      const dx = this.x - mx, dy = this.y - my;
+      const d2 = dx*dx + dy*dy;
+      if (d2 < 14400) { const f = 0.6 / Math.sqrt(d2); this.vx += dx * f * 0.012; this.vy += dy * f * 0.012; }
+      /* dampen */
+      this.vx *= 0.992; this.vy *= 0.995;
+      this.x += this.vx; this.y += this.vy;
+      this.phase += this.speed;
+      if (this.streak) this.ang += this.angV;
+      if (this.y < -90 || this.x < -90 || this.x > W + 90) this.init(false);
+    }
+    draw() {
+      const a = this.baseAlpha * (0.55 + 0.45 * Math.sin(this.phase));
+      const [r,g,b] = this.col;
+      if (this.streak) {
+        cx.save();
+        cx.translate(this.x, this.y);
+        cx.rotate(this.ang);
+        const g2 = cx.createLinearGradient(-this.len/2, 0, this.len/2, 0);
+        g2.addColorStop(0, `rgba(${r},${g},${b},0)`);
+        g2.addColorStop(.5, `rgba(${r},${g},${b},${a})`);
+        g2.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        cx.strokeStyle = g2;
+        cx.lineWidth = this.r * .7;
+        cx.beginPath(); cx.moveTo(-this.len/2, 0); cx.lineTo(this.len/2, 0); cx.stroke();
+        cx.restore();
+      } else {
+        cx.beginPath();
+        cx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        cx.fillStyle = `rgba(${r},${g},${b},${a})`;
+        cx.fill();
+        if (this.r > 1.6) {
+          cx.beginPath();
+          cx.arc(this.x, this.y, this.r * 3.5, 0, Math.PI*2);
+          cx.fillStyle = `rgba(${r},${g},${b},${a * .07})`;
+          cx.fill();
+        }
+      }
+    }
   }
-  requestAnimationFrame(loop);
-}
-loop();
 
+  const COUNT = Math.min(110, Math.floor(W * H / 9000));
+  const ps = Array.from({length: COUNT}, () => new P(true));
+
+  /* connection mesh */
+  const DIST = 130;
+  function mesh() {
+    for (let i = 0; i < ps.length; i++) {
+      for (let j = i+1; j < ps.length; j++) {
+        const dx = ps[i].x - ps[j].x, dy = ps[i].y - ps[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < DIST) {
+          const a = (1 - d/DIST) * 0.13;
+          cx.beginPath();
+          cx.moveTo(ps[i].x, ps[i].y);
+          cx.lineTo(ps[j].x, ps[j].y);
+          cx.strokeStyle = `rgba(200,255,0,${a})`;
+          cx.lineWidth = .5;
+          cx.stroke();
+        }
+      }
+    }
+  }
+
+  /* flowing waves */
+  let t = 0;
+  const WAVES = [
+    {amp:42, freq:.0032, sp:.011, yf:.24, a:.055, r:200, g:255, b:0},
+    {amp:28, freq:.004,  sp:.017, yf:.5,  a:.045, r:0,   g:200, b:255},
+    {amp:48, freq:.0026, sp:.008, yf:.76, a:.045, r:190, g:80,  b:255},
+  ];
+
+  function waves() {
+    WAVES.forEach(w => {
+      cx.beginPath();
+      for (let x = 0; x <= W; x += 3) {
+        const y = H * w.yf
+          + Math.sin(x * w.freq + t * w.sp) * w.amp
+          + Math.sin(x * w.freq * 1.8 + t * w.sp * 1.4) * w.amp * .38;
+        x === 0 ? cx.moveTo(x, y) : cx.lineTo(x, y);
+      }
+      cx.strokeStyle = `rgba(${w.r},${w.g},${w.b},${w.a})`;
+      cx.lineWidth = 1.3;
+      cx.stroke();
+    });
+  }
+
+  /* hexagonal grid drift */
+  let hexT = 0;
+  function hexGrid() {
+    const size = 60;
+    const cols = Math.ceil(W / size) + 2;
+    const rows = Math.ceil(H / size) + 2;
+    cx.save();
+    for (let row = -1; row < rows; row++) {
+      for (let col = -1; col < cols; col++) {
+        const ox = col * size * 1.732 + (row % 2) * size * .866;
+        const oy = row * size * 1.5;
+        const drift = Math.sin(hexT * .008 + col * .4 + row * .3) * .018;
+        cx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const ang = Math.PI / 3 * i + hexT * .001;
+          const px = ox + Math.cos(ang) * size * .48;
+          const py = oy + Math.sin(ang) * size * .48;
+          i === 0 ? cx.moveTo(px, py) : cx.lineTo(px, py);
+        }
+        cx.closePath();
+        cx.strokeStyle = `rgba(200,255,0,${drift + .012})`;
+        cx.lineWidth = .4;
+        cx.stroke();
+      }
+    }
+    cx.restore();
+    hexT++;
+  }
+
+  function frame() {
+    cx.clearRect(0, 0, W, H);
+    hexGrid();
+    waves();
+    mesh();
+    ps.forEach(p => { p.update(); p.draw(); });
+    t++;
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ══ CURSOR TRAIL ══ */
+(function(){
+  const c = document.getElementById('trail');
+  const cx = c.getContext('2d');
+  let W, H;
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const pts = []; let mx = W/2, my = H/2;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function loop(){
+    cx.clearRect(0,0,W,H);
+    pts.push({x:mx, y:my, life:1});
+    if(pts.length > 55) pts.shift();
+    for(let i=1;i<pts.length;i++){
+      const p=pts[i], pp=pts[i-1];
+      const a = p.life * (i/pts.length) * 0.45;
+      cx.beginPath(); cx.moveTo(pp.x,pp.y); cx.lineTo(p.x,p.y);
+      cx.strokeStyle=`rgba(200,255,0,${a})`; cx.lineWidth=2; cx.lineCap='round'; cx.stroke();
+      p.life *= 0.93;
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ══ NOTIFY ══ */
 function handleNotify(){
-  const inp=document.getElementById('emailInput');
-  const v=inp.value.trim();
-  if(!v||!v.includes('@')){inp.style.borderColor='rgba(255,80,80,0.4)';return;}
-  inp.style.borderColor='rgba(200,255,0,0.4)';
-  inp.value='';
-  inp.placeholder="You're on the list \u2713";
-  setTimeout(()=>{inp.placeholder='your@email.com';inp.style.borderColor='';},3000);
+  const inp = document.getElementById('emailInput');
+  const v = inp.value.trim();
+  if(!v || !v.includes('@')){ inp.style.borderColor='rgba(255,80,80,.45)'; return; }
+  inp.style.borderColor='rgba(200,255,0,.45)';
+  inp.value=''; inp.placeholder="You're on the list \u2713";
+  setTimeout(()=>{ inp.placeholder='your@email.com'; inp.style.borderColor=''; }, 3000);
 }
-document.getElementById('emailInput').addEventListener('keydown',e=>{if(e.key==='Enter')handleNotify();});
+document.getElementById('emailInput').addEventListener('keydown', e=>{ if(e.key==='Enter') handleNotify(); });
 </script>
-
 </body>
 </html>
